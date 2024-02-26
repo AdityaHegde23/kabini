@@ -1,50 +1,78 @@
 import pandas as pd
 import numpy as np
-import itertools
-from scipy.stats import expon
+import fetch_data
 
-csv_file = 'your_data_distribution.csv'
-data = pd.read_csv(csv_file)
 
-# Define the numeric attributes you want to generate queries for
-numeric_attributes = ['Global_active_power', 'Global_reactive_power', 'Voltage', 'Global_intensity',
-                      'Sub_metering_1', 'Sub_metering_2', 'Sub_metering_3']
+vector_dump_path = "../utils/forestcovertype/forestcovertype_"
 
-# Function to generate query centers and widths
-def generate_query_parameters(attr_min, attr_max, distribution='uniform'):
-    if distribution == 'uniform':
-        center = np.random.randint(attr_min, attr_max + 1)
-        width = np.random.randint(1, attr_max - attr_min + 1)
-    else:  # Exponential distribution for data-centric
-        scale = (attr_max - attr_min) / 3
-        width = int(expon(scale=scale).rvs())
-        center = np.random.randint(attr_min, attr_max + 1)
-    return center, width
+numeric_attributes = fetch_data.df.columns.tolist()
+
+queries_count = 200
+
+vector_data_columns = [
+    f"{col}_{suffix}" for col in numeric_attributes for suffix in ["start", "end"]
+]
+vector_data_distb = [(0,) * len(vector_data_columns)] * (queries_count//2)
+vector_df_distb = pd.DataFrame(vector_data_distb, columns=vector_data_columns)
+
+vector_data_tupb = [(0,) * len(vector_data_columns)] * (queries_count//2)
+vector_df_tupb = pd.DataFrame(vector_data_tupb, columns=vector_data_columns)
+
+
+
+def generate_distribution_based_query(df, attributes, row_number):
+    conditions = []
+    for attr in attributes:
+        attr_min, attr_max = df[attr].min(), df[attr].max()
+        value1 = np.random.uniform(attr_min, attr_max)
+        value2 = np.random.uniform(attr_min, attr_max)
+
+        minValue = min(value1, value2)
+        maxValue = max(value2, value1)
+        conditions.append(f"\"{attr}\" BETWEEN {minValue:.2f} AND {maxValue:.2f}")
+
+        vector_df_distb.at[row_number, f"{attr}_start"] = minValue
+        vector_df_distb.at[row_number, f"{attr}_end"] = maxValue
+    #print(conditions)
+    return "SELECT * FROM your_table WHERE " + " AND ".join(conditions) + ";"
+
+def generate_tuple_based_query(df, attributes, row_number):
+    sample = df.sample(1, random_state=42)
+    sample2 = df.sample(1, random_state=43)
+    conditions = []
+    for attr in attributes:
+      minValue = min(sample.iloc[0][attr], sample2.iloc[0][attr])
+      maxValue = max(sample.iloc[0][attr], sample2.iloc[0][attr])
+      conditions.append(f"\"{attr}\" BETWEEN {minValue:.2f} AND {maxValue:.2f}")
+
+
+      vector_df_tupb.at[row_number, f"{attr}_start"] = minValue
+      vector_df_tupb.at[row_number, f"{attr}_end"] = maxValue
+    return "SELECT * FROM your_table WHERE " + " AND ".join(conditions) + ";"
 
 # Generate SQL queries
-num_queries = 2000
+#num_queries = 6  # Example number of queries to generate
 queries = []
 
-for _ in range(num_queries):
-    # Randomly select the number of dimensions (attributes) for the query
+for row_number in range(queries_count // 2):  # Half based on distribution
     num_attrs = np.random.randint(2, len(numeric_attributes) + 1)
     selected_attrs = np.random.choice(numeric_attributes, size=num_attrs, replace=False)
-
-    conditions = []
-    for attr in selected_attrs:
-        attr_min, attr_max = data[attr].min(), data[attr].max()  # Assuming min and max values are representative
-        center, width = generate_query_parameters(attr_min, attr_max, distribution='uniform')
-        min_val = max(attr_min, center - width // 2)
-        max_val = min(attr_max, center + width // 2)
-        conditions.append(f"'{attr}' BETWEEN {min_val} AND {max_val}")
-
-    query = "SELECT * FROM your_table WHERE " + " AND ".join(conditions) + ";"
+    query = generate_distribution_based_query(fetch_data.df, selected_attrs, row_number)
     queries.append(query)
 
-# Optionally, save the queries to a file
-with open('generated_queries.sql', 'w') as f:
-    for query in queries:
-        print(query)
-        f.write("%s\n" % query)
+for row_number in range(queries_count // 2):  # Half based on data tuples
+    num_attrs = np.random.randint(2, len(numeric_attributes) + 1)
+    selected_attrs = np.random.choice(numeric_attributes, size=num_attrs, replace=False)
+    query = generate_tuple_based_query(fetch_data.df, selected_attrs, row_number)
+    queries.append(query)
 
-print("Queries generated and saved to generated_queries.sql")
+vector_df = pd.concat([vector_df_distb,vector_df_tupb])
+vector_df.to_csv('vector.csv',index=False, header=False)
+
+# Example: Print the first few queries
+# for query in queries[:5]:
+#     print(query)
+
+queries_df = pd.DataFrame(queries)
+queries_df.to_csv('queries.csv')
+
