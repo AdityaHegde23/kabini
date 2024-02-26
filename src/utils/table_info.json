@@ -1,0 +1,18 @@
+{
+    "user_info": {
+        "user": "postgres",
+        "password": "postgres",
+        "host": "localhost",
+        "port": 5432
+    },
+    "forestcovertype": {
+        "db_conenction_string": "postgresql://postgres:postgres@localhost/forest-covertype-db",
+        "dbname": "forest-covertype-db",
+        "table_name": "forest_cover",
+        "test_query_file_path": "../test-queries/unique_postgres_forest_range_queries_5000_with_quotes.csv",
+        "data_desc_csv_path": "../utils/forestcover/forest_covertype_desc.csv"
+    },
+    "power": {},
+    "higgs": {},
+    "weather": {}
+}

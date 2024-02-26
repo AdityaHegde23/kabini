@@ -1,3 +1,7 @@
+"""
+- Has postgres utils functions such as create connection, create table, close connection.
+"""
+
 import psycopg2
 from sqlalchemy import create_engine
 

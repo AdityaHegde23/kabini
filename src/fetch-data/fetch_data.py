@@ -1,3 +1,7 @@
+"""
+- Fetches data and converts to pandas data frame.
+"""
+
 import sys
 
 sys.path.append("../utils")
@@ -9,4 +13,4 @@ covertype = fetch_ucirepo(id=31)
 # data (as pandas dataframes)
 X = pd.DataFrame(covertype.data.features)
 Y = pd.DataFrame(covertype.data.targets)
-df = X.iloc[:, :10]  
+df = X.iloc[:, :10]
