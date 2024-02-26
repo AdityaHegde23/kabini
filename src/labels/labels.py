@@ -1,3 +1,8 @@
+"""
+- Fetches actual cardinality count of the given queries by running query in postgres.
+- Stores labels against the queries in "../utils/[table_name]/[table_name]_labels.csv".
+"""
+
 import sys
 
 sys.path.append("../utils")
