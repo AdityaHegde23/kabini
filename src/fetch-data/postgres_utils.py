@@ -31,6 +31,11 @@ class PostgresUtils:
 
         return conn, cursor, engine
 
+    def createDatabase(self, conn, cursor, database_name):
+        cursor.execute(f"CREATE DATABASE {database_name}")
+        conn.commit
+        return print("Database created")
+
     def createTable(self, table_name, data_frame, engine):
         data_frame.to_sql(table_name, engine, if_exists="replace", index=False)
         return print(f"{table_name} table created.")

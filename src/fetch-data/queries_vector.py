@@ -11,7 +11,7 @@ import fetch_data
 
 with open("../utils/table_info.json", "r") as f:
     table_info_data = json.load(f)
-ref_table = "forestcovertype"
+ref_table = "power"
 
 vector_dump_path = f"../utils/{table_info_data[ref_table]['table_name']}/{table_info_data[ref_table]['table_name']}_vector.csv"
 queries_dump_path = f"../utils/{table_info_data[ref_table]['table_name']}/{table_info_data[ref_table]['table_name']}_queries.csv"

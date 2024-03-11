@@ -12,7 +12,13 @@
         "test_query_file_path": "../test-queries/unique_postgres_forest_range_queries_5000_with_quotes.csv",
         "data_desc_csv_path": "../utils/forestcover/forest_covertype_desc.csv"
     },
-    "power": {},
+    "power": {
+        "db_conenction_string": "postgresql://postgres:postgres@localhost/power-db",
+        "dbname": "power-db",
+        "table_name": "power",
+        "test_query_file_path": "../test-queries/.csv",
+        "data_desc_csv_path": "../utils/power/power_desc.csv"
+    },
     "higgs": {},
     "weather": {}
 }

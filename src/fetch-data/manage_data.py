@@ -12,7 +12,7 @@ import fetch_data
 
 with open("../utils/table_info.json", "r") as f:
     table_info_data = json.load(f)
-ref_table = "forestcovertype"
+ref_table = "power"
 
 
 def generate_data_desc():
@@ -32,10 +32,10 @@ conn, cursor, engine = pg.connection(
     table_info_data["user_info"]["port"],
 )
 
-df_queries = pd.read_csv(
-    table_info_data[ref_table]["test_query_file_path"],
-    index_col=None,
-)
+# df_queries = pd.read_csv(
+#     table_info_data[ref_table]["test_query_file_path"],
+#     index_col=None,
+# )
 
 
 def run_query():
@@ -49,5 +49,8 @@ def close_connection():
     pg.connectionClose(conn, cursor)
 
 
+generate_data_desc()
+#pg.createDatabase(conn, cursor, table_info_data[ref_table]["dbname"])
+pg.createTable(table_info_data[ref_table]["table_name"], fetch_data.df, engine)
 # run_query()
-# close_connection()
+close_connection()
