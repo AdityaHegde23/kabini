@@ -19,6 +19,12 @@
         "test_query_file_path": "../test-queries/.csv",
         "data_desc_csv_path": "../utils/power/power_desc.csv"
     },
-    "higgs": {},
+    "higgs": {
+        "db_conenction_string": "postgresql://postgres:postgres@localhost/higgs-db",
+        "dbname": "higgs-db",
+        "table_name": "higgs",
+        "test_query_file_path": "../test-queries/.csv",
+        "data_desc_csv_path": "../utils/higgs/higgs_desc.csv"
+    },
     "weather": {}
 }

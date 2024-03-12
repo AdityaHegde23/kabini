@@ -12,7 +12,7 @@ import fetch_data
 
 with open("../utils/table_info.json", "r") as f:
     table_info_data = json.load(f)
-ref_table = "power"
+ref_table = "higgs"
 
 
 def generate_data_desc():
@@ -49,8 +49,12 @@ def close_connection():
     pg.connectionClose(conn, cursor)
 
 
-generate_data_desc()
-#pg.createDatabase(conn, cursor, table_info_data[ref_table]["dbname"])
-pg.createTable(table_info_data[ref_table]["table_name"], fetch_data.df, engine)
+batch_size = 10000
+for chunk in pd.read_csv("../utils/higgs/higgs_df.csv", chunksize=batch_size):
+    chunk.to_sql("higgs", engine, if_exists="append", index=False)
+
+# generate_data_desc()
+# pg.createDatabase(conn, cursor, table_info_data[ref_table]["dbname"])
+# pg.createTable(table_info_data[ref_table]["table_name"], fetch_data.df, engine)
 # run_query()
 close_connection()

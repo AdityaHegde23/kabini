@@ -11,7 +11,7 @@ import fetch_data
 
 with open("../utils/table_info.json", "r") as f:
     table_info_data = json.load(f)
-ref_table = "power"
+ref_table = "higgs"
 
 vector_dump_path = f"../utils/{table_info_data[ref_table]['table_name']}/{table_info_data[ref_table]['table_name']}_vector.csv"
 queries_dump_path = f"../utils/{table_info_data[ref_table]['table_name']}/{table_info_data[ref_table]['table_name']}_queries.csv"
@@ -75,12 +75,14 @@ for row_number in range(queries_count // 2):  # Half based on distribution
     selected_attrs = np.random.choice(numeric_attributes, size=num_attrs, replace=False)
     query = generate_distribution_based_query(fetch_data.df, selected_attrs, row_number)
     queries.append(query)
+    print(f"data random {row_number}")
 
 for row_number in range(queries_count // 2):  # Half based on data tuples
     num_attrs = np.random.randint(2, len(numeric_attributes) + 1)
     selected_attrs = np.random.choice(numeric_attributes, size=num_attrs, replace=False)
     query = generate_tuple_based_query(fetch_data.df, selected_attrs, row_number)
     queries.append(query)
+    print(f"data tuple {row_number}")
 
 vector_df = pd.concat([vector_df_distb, vector_df_tupb])
 vector_df.to_csv(vector_dump_path, index=False, header=False)

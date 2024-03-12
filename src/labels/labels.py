@@ -12,7 +12,7 @@ from postgres_utils import *
 
 with open("../utils/table_info.json", "r") as f:
     table_info_data = json.load(f)
-ref_table = "power"
+ref_table = "higgs"
 label_path = f"../utils/{table_info_data[ref_table]['table_name']}/{table_info_data[ref_table]['table_name']}_labels.csv"
 queries_path = f"../utils/{table_info_data[ref_table]['table_name']}/{table_info_data[ref_table]['table_name']}_queries.csv"
 
